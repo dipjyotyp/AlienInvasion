@@ -62,7 +62,6 @@ def update_screen(ai_settings, screen, ship, aliens, bullets):
     # Make the most recent drwn screen visible
     pygame.display.flip()
 
-
 def get_number_aliens_x(ai_settings, alien_width):
     """Deterine the number of aliens that fit in a row."""
     available_space_x = ai_settings.screen_width - 2 * alien_width
@@ -83,7 +82,6 @@ def creat_alien(ai_settings, screen, aliens, alien_number, row_number):
     alien.rect.x = alien.x
     alien.rect.y = alien.rect.height + 2 * alien.rect.height * row_number
     aliens.add(alien)
-    
 
 def create_fleet(ai_settings, screen, ship, aliens):
     """Create full fleet fo aliens"""
@@ -96,7 +94,22 @@ def create_fleet(ai_settings, screen, ship, aliens):
     for row_number in range(number_rows):
         for alien_number in range(number_aliens_x):
             creat_alien(ai_settings, screen, aliens, alien_number, row_number)
+    
+def check_fleet_edges(ai_settings, aliens):
+    """Respond appropreately if any aliens have reached an edge."""
+    for alien in aliens.sprites():
+        if alien.check_edges():
+            change_fleet_direction(ai_settings, aliens)
+            break
 
-def update_aliens(aliens):
-    """Update the positions of all aliens in the fleet."""
+def change_fleet_direction(ai_settings, aliens):
+    """Drop the entire fleet and change the direction."""
+    for alien in aliens.sprites():
+        alien.rect.y += ai_settings.fleet_drop_speed
+    ai_settings.fleet_direction *= -1
+
+def update_aliens(ai_settings, aliens):
+    """Check fi the fleet is at an edge,
+        and Update the positions of all aliens in the fleet."""
+    check_fleet_edges(ai_settings, aliens)
     aliens.update()
